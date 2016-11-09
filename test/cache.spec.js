@@ -19,6 +19,12 @@ test('set/get expired val', async t => {
     t.is(cachedVal, null);
 });
 
+test('set/get expired val without validation', async t => {
+    await t.context.cache.set('store', 'key', 'val');
+    const cachedVal = await t.context.cache.get('store', 'key', false);
+    t.is(cachedVal, 'val');
+});
+
 test('get non-existent val', async t => {
     const cachedVal = await t.context.cache.get('store', 'key');
     t.is(cachedVal, null);
@@ -50,4 +56,9 @@ test('remove val on non-existent store', async t => {
 
 test('illegal store name', async t => {
     t.throws(() => factory(localforageStub)(['with spaces']), UnityCacheError);
+});
+
+test('does not throw on cache params', async t => {
+    const cache = factory(localforageStub)(['store'], 'test', 'test database', 'localStorage');
+    t.pass();
 });

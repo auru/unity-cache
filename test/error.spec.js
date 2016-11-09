@@ -16,3 +16,7 @@ test('instance of UnityCacheError', t => {
 test('to string', t => {
     t.is(t.context.error.toString(), 'UnityCacheError: Something something')
 });
+
+test('empty message', t => {
+    t.is((new UnityCacheError()).toString(), 'UnityCacheError')
+});
