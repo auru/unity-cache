@@ -48,6 +48,9 @@
     "node": ">=4",
     "npm": ">=3"
   },
+  "dependencies": {
+    "localforage": "^1.4.3"
+  },
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-cli": "^6.16.0",
