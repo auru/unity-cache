@@ -36,6 +36,9 @@ export default function factory(localforage) {
 
     async function get(bin, key, validate = true) {
         const isValid = validate && cacheBins[bin] ? await cacheBins[EXPIRE_BIN].getItem(getExpireKey(bin, key)) > Date.now() : true;
+        if (!isValid) {
+            await cacheBins[EXPIRE_BIN].removeItem(getExpireKey(bin, key));
+        }
         return isValid ? await cacheBins[bin].getItem(key) : null; // localForage return null if item doesn't exist
     }
 
