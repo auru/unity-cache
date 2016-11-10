@@ -1,4 +1,4 @@
 import factory from './factory';
-import localforage from 'localforage/dist/localforage.nopromises';
+import localforage from 'localforage/src/localforage';
 
 export default factory(localforage);
