@@ -1,3 +1,10 @@
+<a name="1.0.0"></a>
+# 1.0.0 (2016-11-10)
+
+* chore(npm): changed npm release scripts ([0c03300](https://github.com/auru/unity-cache/commit/0c03300))
+
+
+
 <a name="0.2.1"></a>
 ## 0.2.1 (2016-11-10)
 

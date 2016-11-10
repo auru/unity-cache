@@ -1,6 +1,6 @@
 {
   "name": "unity-cache",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Cache abstraction around localforage.",
   "main": "lib/index.js",
   "scripts": {
