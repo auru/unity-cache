@@ -1,3 +1,12 @@
+<a name="0.2.1"></a>
+## 0.2.1 (2016-11-10)
+
+* fix: cache still expires by default ([1cc07c5](https://github.com/auru/unity-cache/commit/1cc07c5))
+* fix: clean up __expire__ table if entry is expired ([769372a](https://github.com/auru/unity-cache/commit/769372a))
+* build(deps): user unbuilt version of localforage ([4684f87](https://github.com/auru/unity-cache/commit/4684f87))
+
+
+
 <a name="0.2.0"></a>
 # 0.2.0 (2016-11-10)
 
