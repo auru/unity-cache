@@ -7,14 +7,20 @@ test.beforeEach(t => {
     t.context.cache = factory(localforageStub)(['store', 'store2']);
 });
 
-test('set/get val', async t => {
+test('set/get val with default expiration period', async t => {
+    await t.context.cache.set('store', 'key', 'val');
+    const cachedVal = await t.context.cache.get('store', 'key');
+    t.is(cachedVal, 'val');
+});
+
+test('set/get val with set expiration period', async t => {
     await t.context.cache.set('store', 'key', 'val', 1000);
     const cachedVal = await t.context.cache.get('store', 'key');
     t.is(cachedVal, 'val');
 });
 
 test('set/get expired val', async t => {
-    await t.context.cache.set('store', 'key', 'val');
+    await t.context.cache.set('store', 'key', 'val', 0);
     const cachedVal = await t.context.cache.get('store', 'key');
     t.is(cachedVal, null);
 });
@@ -43,11 +49,8 @@ test('remove val', async t => {
     t.pass();
 });
 
-test('remove non-existent val', async t => {
-    await t.context.cache.set('store', 'key2', 'data');
-    await t.context.cache.remove('store', 'key');
-    const cachedVal = await t.context.cache.get('store', 'key2');
-    t.is(cachedVal, null);
+test('remove non-existent key', async t => {
+    t.doesNotThrow(async () => await t.context.cache.remove('store', 'key-not-exist'));
 });
 
 test('remove val on non-existent store', async t => {
@@ -59,6 +62,5 @@ test('illegal store name', async t => {
 });
 
 test('does not throw on cache params', async t => {
-    const cache = factory(localforageStub)(['store'], 'test', 'test database', 'localStorage');
-    t.pass();
+    t.doesNotThrow(() => factory(localforageStub)(['store'], 'test', 'test database', 'localStorage'));
 });
