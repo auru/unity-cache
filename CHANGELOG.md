@@ -1,3 +1,11 @@
+<a name="0.2.0"></a>
+# 0.2.0 (2016-11-10)
+
+* feat: never expire by default ([1e3b4b1](https://github.com/auru/unity-cache/commit/1e3b4b1))
+* chore(package): update eslint-config-unity to version 1.0.1 ([7c273f7](https://github.com/auru/unity-cache/commit/7c273f7))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2016-11-09)
 
