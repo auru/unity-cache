@@ -42,7 +42,7 @@ export default function factory(localforage) {
         return isValid ? await cacheBins[bin].getItem(key) : null; // localForage return null if item doesn't exist
     }
 
-    async function set(bin, key, data, expire = Infinity) {
+    async function set(bin, key, data, expire = Number.MAX_SAFE_INTEGER) {
         return await Promise.all([
             cacheBins[EXPIRE_BIN].setItem(getExpireKey(bin, key), Date.now() + Number(expire)),
             cacheBins[bin].setItem(key, data)
