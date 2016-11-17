@@ -1,3 +1,10 @@
+<a name="1.1.1"></a>
+## 1.1.1 (2016-11-17)
+
+* fix(api): async drop ([3e0d6c7](https://github.com/auru/unity-cache/commit/3e0d6c7))
+
+
+
 <a name="1.1.0"></a>
 # 1.1.0 (2016-11-17)
 
