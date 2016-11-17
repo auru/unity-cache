@@ -1,3 +1,11 @@
+<a name="1.1.0"></a>
+# 1.1.0 (2016-11-17)
+
+* refactor: remove factory & refactor drop ([2fd9d57](https://github.com/auru/unity-cache/commit/2fd9d57))
+* feat: add drop method ([91519f6](https://github.com/auru/unity-cache/commit/91519f6))
+
+
+
 <a name="1.0.0"></a>
 # 1.0.0 (2016-11-10)
 
