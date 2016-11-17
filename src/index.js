@@ -58,9 +58,9 @@ async function remove(bin, key) {
     ]);
 }
 
-function drop(bins) {
+async function drop(bins) {
     bins = [].concat(bins);
-    bins.map(bin => cacheBins[bin].clear());
+    return await Promise.all(bins.map(bin => cacheBins[bin].clear()));
 }
 
 function createCache(bins, name = DEFAULT_NAME, description = DEFAULT_DESCRIPTION, driver = DB_DRIVER) {
