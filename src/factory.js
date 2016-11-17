@@ -35,10 +35,13 @@ export default function factory(localforage) {
     }
 
     async function get(bin, key, validate = true) {
-        const isValid = validate && cacheBins[bin] ? await cacheBins[EXPIRE_BIN].getItem(getExpireKey(bin, key)) > Date.now() : true;
+        const expired = await cacheBins[EXPIRE_BIN].getItem(getExpireKey(bin, key));
+        const isValid = validate && cacheBins[bin] ? expired > Date.now() : true;
+
         if (!isValid) {
             await cacheBins[EXPIRE_BIN].removeItem(getExpireKey(bin, key));
         }
+
         return isValid ? await cacheBins[bin].getItem(key) : null; // localForage return null if item doesn't exist
     }
 
@@ -62,10 +65,21 @@ export default function factory(localforage) {
         return {
             get,
             set,
-            remove
+            remove,
+            drop
         };
+    }
+
+    function drop(bins) {
+
+        if (!Array.isArray(bins)) {
+            bins = [ bins ];
+        }
+
+        bins.map(bin => {
+            return cacheBins[bin].clear();
+        });
     }
 
     return createCache;
 }
-
