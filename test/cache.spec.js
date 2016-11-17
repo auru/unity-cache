@@ -66,5 +66,5 @@ test('does not throw on cache params', async t => {
 });
 
 test('drop store', async t => {
-    t.notThrows(async () => await t.context.cache.drop([ 'drop_store' ]));
+    t.notThrows(async () => await t.context.cache.drop('drop_store'));
 });
