@@ -52,7 +52,7 @@
     "localforage": "^1.4.3"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.17.0",
     "babel-cli": "^6.16.0",
     "babel-core": "^6.17.0",
     "babel-polyfill": "^6.16.0",
