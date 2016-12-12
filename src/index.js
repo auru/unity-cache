@@ -1,76 +1,164 @@
+import Dexie from 'dexie';
 import UnityCacheError from './error';
-import localforage from 'localforage/dist/localforage.nopromises';
 
-const DB_DRIVER = [ localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE ];
 const RE_BIN = /^\w+$/;
 const EXPIRE_BIN = '___expire___';
 const EXPIRE_GLUE = '::';
 const DEFAULT_NAME = 'unity';
-const DEFAULT_DESCRIPTION = 'Unity cache';
+const DEFAULT_VERSION = 1;
 
-let cacheBins = {};
+const cacheInstance = {
+    config: {},
+    db: null
+};
 
-function createCacheBins(bins, name, description, driver) {
-    bins = [].concat(bins, EXPIRE_BIN);
+function setCacheConfig(name, stores, version) {
+    stores = [].concat(stores, EXPIRE_BIN);
 
-    return bins.reduce((result, storeName) => {
+    stores = stores.reduce((result, storeName) => {
         if (!RE_BIN.test(storeName)) {
             throw new UnityCacheError(`Store names can only be alphanumeric, '${storeName}' given`);
         }
 
-        result[storeName] = localforage.createInstance({
-            storeName,
-            name,
-            description,
-            driver
-        });
-
+        result[storeName] = '&';
         return result;
     }, {});
+
+    cacheInstance.config = {
+        name,
+        stores,
+        version
+    };
 }
 
-function getExpireKey(bin, key) {
-    return bin + EXPIRE_GLUE + key;
-}
+function initCacheStores() {
+    const { name, stores, version } = cacheInstance.config;
 
-async function get(bin, key, validate = true) {
-    const expired = await cacheBins[EXPIRE_BIN].getItem(getExpireKey(bin, key));
-    const isValid = validate && cacheBins[bin] ? expired > Date.now() : true;
+    cacheInstance.db = new Dexie(name);
 
-    if (!isValid) {
-        await cacheBins[EXPIRE_BIN].removeItem(getExpireKey(bin, key));
+    if (!cacheInstance.db) {
+        throw new UnityCacheError('Database is undefined or null');
     }
 
-    return isValid ? await cacheBins[bin].getItem(key) : null; // localForage return null if item doesn't exist
+    cacheInstance.db
+        .version(version)
+        .stores(stores);
 }
 
-async function set(bin, key, data, expire = Number.MAX_SAFE_INTEGER) {
+function errorHandlerWrapper(method) {
+    return async (...params) => {
+        try {
+            return await method.call(this, ...params);
+        } catch (e) {
+            switch (e.name) {
+            case Dexie.errnames.Upgrade:
+            case Dexie.errnames.Version:
+                await upgradeDB();
+                return null;
+
+            case Dexie.errnames.OpenFailed:
+            case Dexie.errnames.ClosedError:
+                await openDB();
+                return null;
+
+            default:
+                throw new UnityCacheError(e);
+            }
+        }
+    };
+}
+
+async function openDB() {
+    if (!cacheInstance.db) {
+        throw new UnityCacheError('Database is undefined or null');
+    }
+
+    return await cacheInstance.db
+        .open()
+        .catch(Dexie.errnames.Upgrade, async () => {
+            await upgradeDB();
+        })
+        .catch(Dexie.errnames.Version, async () => {
+            await upgradeDB();
+        })
+        .catch(e => {
+            throw new UnityCacheError(e);
+        });
+}
+
+async function upgradeDB() {
+    return await deleteDB()
+        .then(() => {
+            initCacheStores();
+        })
+        .catch(e => {
+            throw new UnityCacheError(e);
+        });
+}
+
+async function deleteDB() {
+    if (!cacheInstance.db) {
+        throw new UnityCacheError('Database is undefined or null');
+    }
+
+    return await cacheInstance.db
+        .delete()
+        .catch(e => {
+            throw new UnityCacheError(e);
+        });
+}
+
+function getExpireKey(store, key) {
+    return store + EXPIRE_GLUE + key;
+}
+
+async function get(store, key, validate = true) {
+    const { db } = cacheInstance;
+
+    const expired = await db[EXPIRE_BIN].get(getExpireKey(store, key));
+    const isValid = validate && db[store] ? expired > Date.now() : true;
+
+    if (!isValid) {
+        await db[EXPIRE_BIN].delete(getExpireKey(store, key));
+    }
+
+    return isValid ? await db[store].get(key) : null;
+}
+
+async function set(store, key, value, expire = Number.MAX_SAFE_INTEGER) {
+    const { db } = cacheInstance;
+
     return await Promise.all([
-        cacheBins[EXPIRE_BIN].setItem(getExpireKey(bin, key), Date.now() + Number(expire)),
-        cacheBins[bin].setItem(key, data)
+        db[EXPIRE_BIN].put(Date.now() + Number(expire), getExpireKey(store, key)),
+        db[store].put(value, key)
     ]);
 }
 
-async function remove(bin, key) {
+async function remove(store, key) {
+    const { db } = cacheInstance;
+
     return await Promise.all([
-        cacheBins[EXPIRE_BIN].removeItem(getExpireKey(bin, key)),
-        cacheBins[bin].removeItem(key)
+        db[EXPIRE_BIN].delete(getExpireKey(store, key)),
+        db[store].delete(key)
     ]);
 }
 
-async function drop(bins) {
-    bins = [].concat(bins);
-    return await Promise.all(bins.map(bin => cacheBins[bin].clear()));
+async function drop(stores) {
+    const { db } = cacheInstance;
+
+    stores = [].concat(stores);
+    return await Promise.all(stores.map(store => db[store].clear()));
 }
 
-function createCache(bins, name = DEFAULT_NAME, description = DEFAULT_DESCRIPTION, driver = DB_DRIVER) {
-    cacheBins = createCacheBins(bins, name, description, driver);
+function createCache(stores, name = DEFAULT_NAME, version = DEFAULT_VERSION) {
+    setCacheConfig(name, stores, version);
+    initCacheStores();
 
     return {
-        get,
-        set,
-        remove,
-        drop
+        get: errorHandlerWrapper(get),
+        set: errorHandlerWrapper(set),
+        remove: errorHandlerWrapper(remove),
+        drop: errorHandlerWrapper(drop)
     };
 }
 
