@@ -37,6 +37,7 @@ function initCacheStores() {
     cacheInstance.db = new Dexie(name);
 
     if (!cacheInstance.db) {
+        /* istanbul ignore next: error new Dexie */
         throw new UnityCacheError('Database is undefined or null');
     }
 
@@ -62,6 +63,7 @@ function errorHandlerWrapper(method) {
                 return null;
 
             default:
+                /* istanbul ignore next: unhandled db error */
                 throw new UnityCacheError(e);
             }
         }
@@ -75,13 +77,16 @@ async function openDB() {
 
     return await cacheInstance.db
         .open()
+        /* istanbul ignore next: upgrade db error, first catch in errorHandlerWrapper */
         .catch(Dexie.errnames.Upgrade, async () => {
             await upgradeDB();
         })
+        /* istanbul ignore next: version db error, first catch in errorHandlerWrapper */
         .catch(Dexie.errnames.Version, async () => {
             await upgradeDB();
         })
         .catch(e => {
+            /* istanbul ignore next: open db error */
             throw new UnityCacheError(e);
         });
 }
@@ -92,6 +97,7 @@ async function upgradeDB() {
             initCacheStores();
         })
         .catch(e => {
+            /* istanbul ignore next: init error or delete db error */
             throw new UnityCacheError(e);
         });
 }
@@ -104,6 +110,7 @@ async function deleteDB() {
     return await cacheInstance.db
         .delete()
         .catch(e => {
+            /* istanbul ignore next: delete db error */
             throw new UnityCacheError(e);
         });
 }
@@ -135,6 +142,10 @@ async function set(store, key, value, expire = Number.MAX_SAFE_INTEGER) {
 }
 
 async function remove(store, key) {
+    if (!store) {
+        return await deleteDB();
+    }
+
     const { db } = cacheInstance;
 
     return await Promise.all([
