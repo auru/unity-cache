@@ -78,13 +78,9 @@ async function openDB() {
     return await cacheInstance.db
         .open()
         /* istanbul ignore next: upgrade db error, first catch in errorHandlerWrapper */
-        .catch(Dexie.errnames.Upgrade, async () => {
-            await upgradeDB();
-        })
+        .catch(Dexie.errnames.Upgrade, upgradeDB)
         /* istanbul ignore next: version db error, first catch in errorHandlerWrapper */
-        .catch(Dexie.errnames.Version, async () => {
-            await upgradeDB();
-        })
+        .catch(Dexie.errnames.Version, upgradeDB)
         .catch(e => {
             /* istanbul ignore next: open db error */
             throw new UnityCacheError(e);
