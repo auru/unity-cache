@@ -1,3 +1,7 @@
-var MockWebStorage = require('mock-webstorage');
+require('browser-env')(['window', 'document', 'navigator']);
 
-global.localStorage = new MockWebStorage();
+const indexedDB = require('fake-indexeddb');
+const FDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
+window.indexedDB = indexedDB;
+window.IDBKeyRange = FDBKeyRange;

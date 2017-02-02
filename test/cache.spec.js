@@ -3,7 +3,7 @@ import createCache from '../src/'
 import UnityCacheError from '../src/error';
 
 test.beforeEach(t => {
-    t.context.cache = createCache(['store', 'store2', 'drop_store']);
+    t.context.cache = createCache(['store', 'store2', 'drop_store'], 'cache', 1);
 });
 
 test('set/get val with default expiration period', async t => {
@@ -68,3 +68,26 @@ test('does not throw on cache params', async t => {
 test('drop store', async t => {
     t.notThrows(async () => await t.context.cache.drop('drop_store'));
 });
+
+test('remove database', async t => {
+    const cache = createCache(['store'], 'test-1', 1);
+    t.notThrows(async () => await cache.remove());
+});
+
+test('upgrade handle', async t => {
+    const cache = createCache(['store'], 'test-2', 1);
+    await cache.set('store', 'key', 'val');
+
+    const newCache = createCache(['store', 'other'], 'test-2', 2);
+    t.notThrows(async () => await newCache.set('store', 'key', 'val'));
+});
+
+test('upgrade handle when new version', async t => {
+    const cache = createCache(['store'], 'test-3', 2);
+    await cache.set('store', 'key', 'val');
+
+    const newCache = createCache(['store'], 'test-3', 1);
+    t.notThrows(async () => await newCache.set('store', 'key', 'val'));
+});
+
+
