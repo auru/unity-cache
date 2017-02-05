@@ -62,7 +62,7 @@
     "browser-env": "^2.0.19",
     "commitizen": "^2.8.6",
     "conventional-changelog-cli": "^1.2.0",
-    "coveralls": "^2.11.14",
+    "coveralls": "2.11.15",
     "cz-conventional-changelog": "^1.2.0",
     "eslint-config-unity": "^1.0.1",
     "fake-indexeddb": "^1.0.8",
