@@ -1,16 +1,3 @@
-<a name="1.2.0"></a>
-# 1.2.0 (2017-02-02)
-
-* chore(package.json): Up browser-env version ([4cc5862](https://github.com/auru/unity-cache/commit/4cc5862))
-* chore(package): update ava to version 0.17.0 ([5401fc2](https://github.com/auru/unity-cache/commit/5401fc2))
-* chore(package): update husky to version 0.12.0 ([0f1fe16](https://github.com/auru/unity-cache/commit/0f1fe16))
-* chore(package): update nyc to version 10.0.0 ([82b71f7](https://github.com/auru/unity-cache/commit/82b71f7))
-* test(test): Add tests ([8c57a2f](https://github.com/auru/unity-cache/commit/8c57a2f))
-* test(test): Fix coverage ([5e9bae8](https://github.com/auru/unity-cache/commit/5e9bae8))
-* refactor(core): Rewrite cache on Dexie ([c5b2c76](https://github.com/auru/unity-cache/commit/c5b2c76))
-
-
-
 <a name="1.1.1"></a>
 ## 1.1.1 (2016-11-17)
 
