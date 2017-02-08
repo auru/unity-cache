@@ -8,7 +8,7 @@
 [![Deps-Dev](https://david-dm.org/auru/unity-cache/dev-status.svg)](https://david-dm.org/auru/unity-cache)
 [![Dependency Status](https://dependencyci.com/github/auru/unity-cache/badge)](https://dependencyci.com/github/auru/unity-cache)
 
-> Cache abstraction around [localforage](https://github.com/localForage/localForage).
+> Cache abstraction around [Dexie.js](https://github.com/dfahlander/Dexie.js).
 
 # Table of Contents
   * [Installation](#installation)
@@ -22,7 +22,33 @@
 npm i --save unity-cache
 ```
 
-# API 
+# API
+
+## createCache(stores, name, version);
+
+**Returns:** {Object}
+
+Use module's `default export` to create an API object.
+
+Return cache methods: `get`, `set`, `remove`, `drop`.
+
+### stores {Array}
+
+Database stores (tables).
+
+### name {String} *Optional*
+**Default:** `unity`
+
+Database name.
+
+### version {Number|String} *Optional*
+**Default:** `1`
+
+Database version. The old database with the same name will be deleted.
+
+# Usage
+
+You can call methods like so: ```cache[method](store, key, value)```
 
 # Contributing
 
