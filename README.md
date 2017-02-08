@@ -30,7 +30,7 @@ npm i --save unity-cache
 
 Use module's `default export` to create an API object.
 
-Return cache methods: `get`, `set`, `remove`, `drop`.
+Return **asynchronous** cache methods: `get`, `set`, `remove`, `drop`.
 
 ### stores {Array}
 
@@ -49,6 +49,8 @@ Database version. The old database with the same name will be deleted.
 # Usage
 
 You can call methods like so: ```cache[method](store, key, value)```
+
+All methods are **asynchronous**.
 
 # Contributing
 
