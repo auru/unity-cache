@@ -58,13 +58,14 @@ function errorHandlerWrapper(method) {
                 return null;
 
             case Dexie.errnames.OpenFailed:
-            case Dexie.errnames.ClosedError:
+            case Dexie.errnames.DatabaseClosed:
                 await openDB();
                 return null;
 
             default:
-                /* istanbul ignore next: unhandled db error */
-                throw new UnityCacheError(e);
+                // log error, continue work on dbError
+                console.error(e);
+                return null;
             }
         }
     };
@@ -102,6 +103,8 @@ async function deleteDB() {
     if (!cacheInstance.db) {
         throw new UnityCacheError('Database is undefined or null');
     }
+
+    cacheInstance.db.close();
 
     return await cacheInstance.db
         .delete()
