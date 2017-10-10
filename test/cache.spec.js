@@ -37,13 +37,11 @@ test('get non-existent val', async t => {
 });
 
 test('set val on non-existent store', async t => {
-    t.notThrows(t.context.cache.set('store-not-exist', 'key', 'val'));
-    t.pass();
+    t.throws(t.context.cache.set('store-not-exist', 'key', 'val'), Error);
 });
 
 test('get val on non-existent store', async t => {
-    t.notThrows(t.context.cache.get('store-not-exist', 'key', 'val'));
-    t.pass();
+    t.throws(t.context.cache.get('store-not-exist', 'key', 'val'), Error);
 });
 
 test('remove val', async t => {
@@ -56,8 +54,7 @@ test('remove non-existent key', async t => {
 });
 
 test('remove val on non-existent store', async t => {
-    t.notThrows(t.context.cache.remove('store-not-exist', 'key'));
-    t.pass();
+    t.throws(t.context.cache.remove('store-not-exist', 'key'), Error);
 });
 
 test('illegal store name', async t => {

@@ -63,9 +63,8 @@ function errorHandlerWrapper(method) {
                 return null;
 
             default:
-                // log error, continue work on dbError
-                console.error(e);
-                return null;
+                /* istanbul ignore next: unhandled db error */
+                throw new UnityCacheError(e);
             }
         }
     };
