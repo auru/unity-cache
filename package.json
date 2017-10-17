@@ -49,7 +49,7 @@
     "npm": ">=3"
   },
   "dependencies": {
-    "dexie": "^1.5.1"
+    "dexie": "^2.0.1"
   },
   "devDependencies": {
     "ava": "^0.18.1",
