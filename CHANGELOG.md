@@ -1,3 +1,16 @@
+<a name="2.1.0"></a>
+# 2.1.0 (2017-10-17)
+
+* fix(cache): revert old changes ([55d6032](https://github.com/auru/unity-cache/commit/55d6032))
+* feat(cache): continue work on error in db, fix errnames, fix delete db ([727016f](https://github.com/auru/unity-cache/commit/727016f))
+* chore(package): update ava to version 0.18.1 ([254d582](https://github.com/auru/unity-cache/commit/254d582))
+* chore(package): update sinon to version 2.0.0 ([9f6322d](https://github.com/auru/unity-cache/commit/9f6322d))
+* docs(readme): fix description to 2.0.0 ([a3d3e67](https://github.com/auru/unity-cache/commit/a3d3e67))
+* docs(readme): review fix ([1f5acfe](https://github.com/auru/unity-cache/commit/1f5acfe))
+* 2.0.0 ([637ef3a](https://github.com/auru/unity-cache/commit/637ef3a))
+
+
+
 <a name="2.0.0"></a>
 # 2.0.0 (2017-02-07)
 
