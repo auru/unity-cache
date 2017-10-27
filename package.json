@@ -63,7 +63,7 @@
     "commitizen": "^2.8.6",
     "conventional-changelog-cli": "^1.2.0",
     "coveralls": "^2.11.14",
-    "cz-conventional-changelog": "^1.2.0",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint-config-unity": "^1.0.1",
     "fake-indexeddb": "^1.0.8",
     "husky": "^0.11.9",
