@@ -1,7 +1,7 @@
 {
   "name": "unity-cache",
-  "version": "2.1.0",
-  "description": "Cache abstraction around localforage.",
+  "version": "2.2.0",
+  "description": "Cache abstraction around Dexie.",
   "main": "lib/index.js",
   "scripts": {
     "build": "npm run test && npm run clean && ./node_modules/.bin/babel src --out-dir lib",
@@ -10,7 +10,7 @@
     "commit": "./node_modules/.bin/git-cz",
     "coverage:report": "./node_modules/.bin/nyc report",
     "coverage:send": "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
-    "lint": "./node_modules/.bin/eslint --ignore-path=.gitignore --fix ./src",
+    "lint": "./node_modules/.bin/eslint --ignore-path=.gitignore --fix ./src ./test",
     "lint-prod": "NODE_ENV='production' npm run lint",
     "version": " ./node_modules/.bin/conventional-changelog -i CHANGELOG.md -s && git add CHANGELOG.md",
     "prepublish": "npm run build",
@@ -36,40 +36,37 @@
   },
   "homepage": "https://github.com/auru/unity-cache#readme",
   "keywords": [
-    "cache",
-    "indexeddb",
-    "localforage",
-    "localstorage",
-    "storage",
     "unity",
-    "websql"
+    "cache",
+    "dexie",
+    "storage",
+    "indexeddb"
   ],
   "engines": {
-    "node": ">=4",
-    "npm": ">=3"
+    "node": ">=11",
+    "npm": ">=6"
   },
   "dependencies": {
-    "dexie": "^2.0.1"
+    "dexie": "^2.0.4"
   },
   "devDependencies": {
-    "ava": "^0.18.1",
-    "babel-cli": "^6.16.0",
-    "babel-core": "^6.17.0",
-    "babel-polyfill": "^6.16.0",
-    "babel-preset-es2015": "^6.16.0",
-    "babel-preset-stage-2": "^6.16.0",
-    "babel-register": "^6.16.3",
-    "browser-env": "^2.0.19",
-    "commitizen": "^2.8.6",
-    "conventional-changelog-cli": "^1.2.0",
-    "coveralls": "^2.11.14",
-    "cz-conventional-changelog": "^1.2.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "ava": "^2.1.0",
+    "browser-env": "^3.2.6",
+    "commitizen": "^3.1.1",
+    "conventional-changelog-cli": "^2.0.21",
+    "coveralls": "^3.0.4",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint-config-unity": "^1.0.1",
-    "fake-indexeddb": "^1.0.8",
-    "husky": "^0.11.9",
-    "nyc": "^10.0.0",
+    "fake-indexeddb": "^2.1.1",
+    "husky": "^2.5.0",
+    "nyc": "^14.1.1",
     "rimraf": "^2.5.4",
-    "sinon": "^2.0.0",
+    "sinon": "^7.3.2",
     "validate-commit-msg": "^2.8.2"
   },
   "ava": {
@@ -79,15 +76,13 @@
     "source": [
       "src/**/*.js"
     ],
-    "concurrency": 4,
-    "failFast": false,
-    "tap": false,
     "require": [
       "./test/setup.js",
-      "babel-register",
-      "babel-polyfill"
+      "@babel/register",
+      "@babel/polyfill"
     ],
-    "babel": "inherit"
+    "failFast": false,
+    "concurrency": 4
   },
   "nyc": {
     "include": [

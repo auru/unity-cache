@@ -6,17 +6,17 @@ test.beforeEach(t => {
 });
 
 test('instance of Error', t => {
-    t.true(t.context.error instanceof Error)
+    t.true(t.context.error instanceof Error);
 });
 
 test('instance of UnityCacheError', t => {
-    t.true(t.context.error instanceof UnityCacheError)
+    t.true(t.context.error instanceof UnityCacheError);
 });
 
 test('to string', t => {
-    t.is(t.context.error.toString(), 'UnityCacheError: Something something')
+    t.is(t.context.error.toString(), 'UnityCacheError: Something something');
 });
 
 test('empty message', t => {
-    t.is((new UnityCacheError()).toString(), 'UnityCacheError')
+    t.is((new UnityCacheError()).toString(), 'UnityCacheError');
 });
