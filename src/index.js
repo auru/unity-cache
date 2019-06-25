@@ -2,25 +2,23 @@ import Dexie from 'dexie';
 import UnityCacheError from './error';
 
 const RE_BIN = /^\w+$/;
-const EXPIRE_BIN = '___expire___';
-const EXPIRE_GLUE = '::';
 const DEFAULT_NAME = 'unity';
 const DEFAULT_VERSION = 1;
 
 const cacheInstance = {
-    config: {},
-    db: null
+    db: null,
+    config: {}
 };
 
-function setCacheConfig(name, stores, version) {
-    stores = [].concat(stores, EXPIRE_BIN);
-
+function initCacheConfig(stores = [], name = DEFAULT_NAME, version = DEFAULT_VERSION) {
+    stores = [].concat(stores);
     stores = stores.reduce((result, storeName) => {
         if (!RE_BIN.test(storeName)) {
             throw new UnityCacheError(`Store names can only be alphanumeric, '${storeName}' given`);
         }
 
-        result[storeName] = '&';
+        result[storeName] = '&key, value, expire';
+
         return result;
     }, {});
 
@@ -34,6 +32,10 @@ function setCacheConfig(name, stores, version) {
 function initCacheStores() {
     const { name, stores, version } = cacheInstance.config;
 
+    if (cacheInstance.db) {
+        closeDB();
+    }
+
     cacheInstance.db = new Dexie(name);
 
     if (!cacheInstance.db) {
@@ -41,9 +43,7 @@ function initCacheStores() {
         throw new UnityCacheError('Database is undefined or null');
     }
 
-    cacheInstance.db
-        .version(version)
-        .stores(stores);
+    cacheInstance.db.version(version).stores(stores);
 }
 
 function errorHandlerWrapper(method) {
@@ -54,6 +54,8 @@ function errorHandlerWrapper(method) {
             switch (e.name) {
             case Dexie.errnames.Upgrade:
             case Dexie.errnames.Version:
+            case Dexie.errnames.InvalidState:
+            case Dexie.errnames.QuotaExceeded:
                 await upgradeDB();
                 return null;
 
@@ -70,8 +72,20 @@ function errorHandlerWrapper(method) {
     };
 }
 
+function closeDB() {
+    if (!cacheInstance.db) {
+        /* istanbul ignore next: db is not defined */
+        throw new UnityCacheError('Database is undefined or null');
+    }
+
+    if (cacheInstance.db.isOpen()) {
+        cacheInstance.db.close();
+    }
+}
+
 async function openDB() {
     if (!cacheInstance.db) {
+        /* istanbul ignore next: db is not defined */
         throw new UnityCacheError('Database is undefined or null');
     }
 
@@ -88,6 +102,11 @@ async function openDB() {
 }
 
 async function upgradeDB() {
+    if (!cacheInstance.db) {
+        /* istanbul ignore next: db is not defined */
+        throw new UnityCacheError('Database is undefined or null');
+    }
+
     return await deleteDB()
         .then(() => {
             initCacheStores();
@@ -100,10 +119,11 @@ async function upgradeDB() {
 
 async function deleteDB() {
     if (!cacheInstance.db) {
+        /* istanbul ignore next: db is not defined */
         throw new UnityCacheError('Database is undefined or null');
     }
 
-    cacheInstance.db.close();
+    closeDB();
 
     return await cacheInstance.db
         .delete()
@@ -113,30 +133,23 @@ async function deleteDB() {
         });
 }
 
-function getExpireKey(store, key) {
-    return store + EXPIRE_GLUE + key;
-}
-
 async function get(store, key, validate = true) {
     const { db } = cacheInstance;
-
-    const expired = await db[EXPIRE_BIN].get(getExpireKey(store, key));
-    const isValid = validate && db[store] ? expired > Date.now() : true;
+    const { value = null, expire = 0 } = await db[store].get(key) || {};
+    const isValid = validate ? expire > Date.now() : true;
 
     if (!isValid) {
-        await db[EXPIRE_BIN].delete(getExpireKey(store, key));
+        await db[store].delete(key);
     }
 
-    return isValid ? await db[store].get(key) : null;
+    return isValid ? value : null;
 }
 
-async function set(store, key, value, expire = Number.MAX_SAFE_INTEGER) {
+async function set(store, key, value, ttl = Number.MAX_SAFE_INTEGER) {
     const { db } = cacheInstance;
+    const expire = Date.now() + Number(ttl);
 
-    return await Promise.all([
-        db[EXPIRE_BIN].put(Date.now() + Number(expire), getExpireKey(store, key)),
-        db[store].put(value, key)
-    ]);
+    return await db[store].put({ key, value, expire });
 }
 
 async function remove(store, key) {
@@ -146,28 +159,26 @@ async function remove(store, key) {
 
     const { db } = cacheInstance;
 
-    return await Promise.all([
-        db[EXPIRE_BIN].delete(getExpireKey(store, key)),
-        db[store].delete(key)
-    ]);
+    return await db[store].delete(key);
 }
 
 async function drop(stores) {
     const { db } = cacheInstance;
 
     stores = [].concat(stores);
+
     return await Promise.all(stores.map(store => db[store].clear()));
 }
 
-function createCache(stores, name = DEFAULT_NAME, version = DEFAULT_VERSION) {
-    setCacheConfig(name, stores, version);
+function createCache(stores = [], name = DEFAULT_NAME, version = DEFAULT_VERSION) {
+    initCacheConfig(stores, name, version);
     initCacheStores();
 
     return {
         get: errorHandlerWrapper(get),
         set: errorHandlerWrapper(set),
-        remove: errorHandlerWrapper(remove),
-        drop: errorHandlerWrapper(drop)
+        drop: errorHandlerWrapper(drop),
+        remove: errorHandlerWrapper(remove)
     };
 }
 
