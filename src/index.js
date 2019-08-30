@@ -95,9 +95,8 @@ async function openDB() {
         .catch(Dexie.errnames.Upgrade, upgradeDB)
         /* istanbul ignore next: version db error, first catch in errorHandlerWrapper */
         .catch(Dexie.errnames.Version, upgradeDB)
-        .catch(e => {
-            /* istanbul ignore next: open db error */
-            throw new UnityCacheError(e);
+        .catch(() => {
+            // do nothing on any other error
         });
 }
 
