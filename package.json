@@ -62,7 +62,7 @@
     "coveralls": "^3.0.4",
     "cz-conventional-changelog": "^2.1.0",
     "eslint-config-unity": "^1.0.1",
-    "fake-indexeddb": "^2.1.1",
+    "fake-indexeddb": "^3.0.0",
     "husky": "^2.5.0",
     "nyc": "^14.1.1",
     "rimraf": "^2.5.4",
