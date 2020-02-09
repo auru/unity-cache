@@ -65,7 +65,7 @@
     "fake-indexeddb": "^2.1.1",
     "husky": "^2.5.0",
     "nyc": "^14.1.1",
-    "rimraf": "^2.5.4",
+    "rimraf": "^3.0.2",
     "sinon": "^7.3.2",
     "validate-commit-msg": "^2.8.2"
   },
