@@ -47,7 +47,7 @@
     "npm": ">=6"
   },
   "dependencies": {
-    "dexie": "^2.0.4"
+    "dexie": "^3.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
